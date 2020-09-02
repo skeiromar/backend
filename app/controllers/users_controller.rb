@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :authorized, only: [:create]
+  # skip_before_action :authorized, only: [:create]
 
   def index
     @users = User.all
@@ -31,11 +31,11 @@ def show
   def create
     @user = User.create(user_params)
     if @user.valid?
-      @cart = Cart.new(user_id: @user.id)
+      @cart = Cart.create(user_id: @user.id)
       @token = encode_token(user_id: @user.id)
       render json: { user: @user, jwt: @token }, status: :created
     else
-      render json: { error: 'failed to create user' }, status: :not_acceptable
+      render json: { error: @user.errors.full_messages }, status: :not_acceptable
     end
     # @user = User.new(user_params)
     # if @user.save

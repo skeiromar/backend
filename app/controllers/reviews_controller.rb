@@ -1,5 +1,5 @@
 class ReviewsController < ApplicationController
-  skip_before_action :authorized, only: [:create, :show, :destroy]
+  # skip_before_action :authorized, only: [:create, :show, :destroy]
 
   def create
     @review = Review.new(review_params)

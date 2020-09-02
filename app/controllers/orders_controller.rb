@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  skip_before_action :authorized, only: [:create]
+  # skip_before_action :authorized, only: [:create]
 
 
   def create
@@ -13,12 +13,7 @@ class OrdersController < ApplicationController
         @order.update(quantity: quantity + 1)
         render json: @order
       elsif (quantity)
-        if quantity == 0
-          @order.destroy
-          render json: {message: 'order removed'}
-        else
-          @order.update(quantity: params[:quantity])
-        end
+        @order.update(quantity: params[:quantity])
         render json: @order
       end
     else
@@ -30,4 +25,22 @@ class OrdersController < ApplicationController
       end
     end
   end
+
+  def delete_cart_item
+    @order = Order.find_by(product_id: params[:product_id], cart_id: params[:cart_id])
+
+    if @order
+      @order.destroy
+      render json: {message: 'succesfully removed'}
+    else
+      render json: {error: 'failed to remove item'}
+    end
+  end
+
+  def delete_all_cart_items
+    Order.all.map {|order| order.destroy}
+    render json: {message: 'succesfully removed all cart items'}
+  end
+
+
 end
