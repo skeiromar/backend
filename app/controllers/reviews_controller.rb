@@ -18,7 +18,7 @@ class ReviewsController < ApplicationController
   end
 
   def destroy
-    @review = Review.find_by(id: params[:id])
+    @review = Review.find_by(id: params[:id], user_id: params[:user_id])
     if @review && @review.destroy
       render json: {status: 'success'}
     else

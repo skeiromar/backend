@@ -4,6 +4,7 @@ class ProductsController < ApplicationController
   def index
     @products = Product.all
     @serializedProducts = []
+    byebug
     @products.each do |product|
       @serializedProducts.push({
         id: product.id,
@@ -19,10 +20,34 @@ class ProductsController < ApplicationController
     render json: @serializedProducts
   end
 
+  def getProducts
+    @products = Product.all
+    @serializedProducts = []
+    @products.each do |product|
+      if (params[:user_id] != -1)
+        isFavorited = !!(Favorite.find_by(user_id: params[:user_id], product_id: product.id))
+      else
+        isFavorited = false
+      end
+      @serializedProducts.push({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        category: product.category,
+        imageTray: url_for(product.image_tray[0]),
+        reviewCount: product.reviews.length,
+        isFavorited: isFavorited
+      }
+    )
+    end
+    render json: @serializedProducts
+  end
+
   def trending_products
     @products = Product.all.includes(:reviews)
     @sorted_products = @products.sort_by{|obj| -obj.reviews.length}
-    @trending_products = (0..3).map { |n| @sorted_products[n] }
+    @trending_products = (0..7).map { |n| @sorted_products[n] }
     @serializedProducts = []
     # byebug
     @trending_products.each do |product|
